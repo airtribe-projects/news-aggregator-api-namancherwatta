@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import userModel from "../model/userModel.js";
-
+import jwt from "jsonwebtoken"
 const userRegister = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password,preferences } = req.body;
     console.log(req.body)
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -20,6 +20,7 @@ const userRegister = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      preferences
     });
 
     dbUser.password = "XXX";
@@ -47,7 +48,8 @@ const userLogin= async (req,res)=>{
     const passwordcheck = await bcrypt.compare(password,userexists.password)
     console.log(passwordcheck)
     if(passwordcheck){
-      return res.status(200).json({message: `Hi ${userexists.name}, you have logged in.`})
+      const jwt_token=jwt.sign({"email":userexists.email,"name":userexists.name},process.env.JWT_KEY,{ expiresIn: "1h" })
+      return res.status(200).json({message: `Hi ${userexists.name}, you have logged in.`, jwt_part:jwt_token})
     }else{
       return res.status(400).json({message: "Please type correct password."})
     }
@@ -58,4 +60,32 @@ const userLogin= async (req,res)=>{
   }
 }
 
-export { userRegister,userLogin };
+const getPreferences=async(req,res)=>{
+  const {email}=req.body
+  if(!email){
+    return res.status(400).json({message:"Email is required"})
+  }
+  const fromDB= await userModel.findOne({email})
+  
+  if(!fromDB){
+    return res.status(404).json({message:"User does not exists"})
+  }
+  const prefers=fromDB.preferences
+  return res.status(200).json(prefers)
+
+}
+
+const updatePreferences=async(req,res)=>{
+ const {email, up_prefers}=req.body
+  if(!email || !up_prefers){
+    return res.status(400).json({message:"Email/Preferences are required"})
+  }
+  const fromDB= await userModel.findOne({email})
+ if(!fromDB){
+    return res.status(404).json({message:"User does not exists"})
+  }
+  const updated_user= await userModel.findByIdAndUpdate(fromDB._id,{preferences:up_prefers}, { new: true })
+  return res.status(200).json({updated_user})
+}
+
+export { userRegister,userLogin,getPreferences,updatePreferences };

@@ -12,10 +12,7 @@ app.use((req, res, next) => {
   console.log("Incoming body:", req.body);
   next();
 });
-// app.post("/test", (req, res) => {
-//   console.log("Body received at /test:", req.body);
-//   res.json({ received: req.body });
-// });
+
 
 app.use("/api/v1/users",userRoute)
 app.get("/",(req,res)=>{
