@@ -15,10 +15,10 @@ const userSchema= new mongoose.Schema({
         type:String,
         required:true,
     },
-    preferences:{
-        type:Object,
-        default:{}
-    }
+    preferences: {
+    type: [String],
+    default: []
+}
 
 })
 

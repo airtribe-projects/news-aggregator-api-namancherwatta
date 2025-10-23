@@ -1,5 +1,6 @@
 import express from "express"
 import userRoute from "./routes/v1/userRoute.js"
+import newsRoute from "./routes/v1/newsRoute.js"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 dotenv.config()
@@ -15,6 +16,7 @@ app.use((req, res, next) => {
 
 
 app.use("/api/v1/users",userRoute)
+app.use("/api/v1/news",newsRoute)
 app.get("/",(req,res)=>{
     res.send("Hello!!")
 })
