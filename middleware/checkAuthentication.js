@@ -1,22 +1,25 @@
-import jwt from "jsonwebtoken"
-const check_authentication=(req,res,next)=>{
-    const {jwt_part}=req.body
-    if(!jwt_part){
-        return res.send("Need to login")
-    }
-    try{
-    const jwt_verified=jwt.verify(jwt_part,process.env.JWT_KEY)
-    console.log(jwt_verified.email,req.body.email)
-    if(jwt_verified.email == req.body.email){
-         next()
-    }else{
-        return res.send("You are not Authenticated")
-    }
-   
-    }catch(error){
-        return res.send("You are not Authenticated")
+import jwt from "jsonwebtoken";
 
-    }
+const check_authentication = (req, res, next) => {
+  try {
+   
+    const authHeader = req.headers.authorization;
     
-}
-export default check_authentication
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Missing token" });
+    }
+
+    const token = authHeader.split(" ")[1];
+   
+    const decoded = jwt.verify(token, process.env.JWT_KEY);
+    
+    req.body.userEmail = decoded.email;
+
+    next();
+  } catch (error) {
+    console.error("JWT verification failed:", error.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+};
+
+export default check_authentication;

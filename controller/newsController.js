@@ -5,7 +5,7 @@ dotenv.config()
 let url="https://gnews.io/api/v4/top-headlines?lang=en&max=5"
 let news_api_key=process.env.NEWS_KEY
 const getNews=async (req,res)=>{
-    const email=req.body.email
+    const email=req.body.userEmail
     
     try {
         const fromDB= await userModel.findOne({email})
@@ -22,7 +22,7 @@ const getNews=async (req,res)=>{
             news.push(...response.data.articles)
         }
 
-        return res.status(200).json(news)
+        return res.status(200).json({news:news})
     } catch (error) {
         console.error("Error in News controller: "+error)
         return res.status(400).json({message:error})
