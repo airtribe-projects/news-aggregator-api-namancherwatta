@@ -3,6 +3,7 @@ import userRoute from "./routes/v1/userRoute.js"
 import newsRoute from "./routes/v1/newsRoute.js"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
+import updateCachePeriodically from "./cache/updatecache.js"
 dotenv.config()
 const app = express();
 const port = process.env.PORT || 5000
@@ -26,6 +27,7 @@ app.get("/",(req,res)=>{
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
     app.listen(port, () => console.log(`Server is listening on ${port}`));
+    updateCachePeriodically();
 })
 .catch((err) => console.error("❌ MongoDB connection error:", err));
 

@@ -81,6 +81,19 @@ const getFavoriteArticles = async (req, res) => {
   res.status(200).json({ articles: user.favoriteArticles });
 };
 
+const searchNews = async (req, res) => {
+  const keyword = req.params.keyword.toLowerCase();
+  const articles = await getCachedNews();
+
+  if (!articles) return res.status(404).json({ message: "No news available" });
+
+  const filtered = articles.filter(article =>
+    article.title.toLowerCase().includes(keyword) ||
+    (article.description && article.description.toLowerCase().includes(keyword))
+  );
+
+  res.status(200).json({ news: filtered });
+};
 
 
-export {getNews,getReadArticles,getFavoriteArticles,markFavorite,markRead}
+export {getNews,getReadArticles,getFavoriteArticles,markFavorite,markRead,searchNews}
