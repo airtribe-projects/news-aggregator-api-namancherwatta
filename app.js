@@ -1,17 +1,36 @@
-const express = require('express');
+import express from "express"
+import userRoute from "./routes/v1/userRoute.js"
+import newsRoute from "./routes/v1/newsRoute.js"
+import dotenv from "dotenv"
+import mongoose from "mongoose"
+import updateCachePeriodically from "./cache/updatecache.js"
+dotenv.config()
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 5000
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.listen(port, (err) => {
-    if (err) {
-        return console.log('Something bad happened', err);
-    }
-    console.log(`Server is listening on ${port}`);
+app.use((req, res, next) => {
+  console.log("Incoming body:", req.body);
+  console.log("Incoming params:", req.params);
+  console.log("Incoming path:", req.path);
+  next();
 });
 
 
+app.use("/api/v1/users",userRoute)
+app.use("/api/v1/news",newsRoute)
+app.get("/",(req,res)=>{
+    res.send("Hello!!")
+})
 
-module.exports = app;
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+    app.listen(port, () => console.log(`Server is listening on ${port}`));
+    updateCachePeriodically();
+})
+.catch((err) => console.error("MongoDB connection error:", err));
+
+
+
+export default app;
