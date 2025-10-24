@@ -9,7 +9,7 @@ const userSchema= new mongoose.Schema({
         type:String,
         required:true,
         trim:true,
-        unique: true
+        unique: true,
     },
     password:{
         type:String,
@@ -18,6 +18,14 @@ const userSchema= new mongoose.Schema({
     preferences: {
     type: [String],
     default: []
+},
+    readArticles: { 
+    type: [String],
+    default: [] 
+},
+    favoriteArticles: { 
+    type: [String],
+    default: [] 
 }
 
 })
