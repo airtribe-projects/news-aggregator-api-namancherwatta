@@ -29,7 +29,7 @@ mongoose.connect(process.env.MONGO_URI)
     app.listen(port, () => console.log(`Server is listening on ${port}`));
     updateCachePeriodically();
 })
-.catch((err) => console.error("❌ MongoDB connection error:", err));
+.catch((err) => console.error("MongoDB connection error:", err));
 
 
 
